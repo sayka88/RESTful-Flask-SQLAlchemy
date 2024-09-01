@@ -95,5 +95,5 @@ api.add_resource(OrderResource, '/orders')
 
 if __name__ == '__main__':
     db.create_all()  # Создаем таблицы базы данных
-    app.run(debug=True)
+    app.run(debug=True, port=5001)
 
