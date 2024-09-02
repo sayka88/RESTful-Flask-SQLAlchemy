@@ -30,9 +30,8 @@ class OrderProduct(db.Model):
 
 # Создание таблиц
 def create_tables():
-    with app.app_context():
-        db.create_all()
-        print("Database tables created.")
+    db.create_all()
+    print("Database tables created.")
 
 # Роуты для продуктов
 @app.route('/products', methods=['GET'])
@@ -80,18 +79,16 @@ def view_cart(customer_id):
 # Роуты для оформления заказа
 @app.route('/customers/<int:customer_id>/checkout', methods=['POST'])
 def checkout(customer_id):
-    # Создание заказа
     new_order = Order(customer_id=customer_id)
     db.session.add(new_order)
     db.session.commit()
-    
-    # Перемещение продуктов из корзины в заказ
+
     cart_items = Cart.query.filter_by(customer_id=customer_id).all()
     for item in cart_items:
         order_product = OrderProduct(order_id=new_order.id, product_id=item.product_id)
         db.session.add(order_product)
-    
-    db.session.delete(cart_items)  # Удаление товаров из корзины
+        db.session.delete(item)  # Удаление каждого элемента корзины
+
     db.session.commit()
     
     return jsonify({'message': 'Order created'}), 201
@@ -104,6 +101,6 @@ def get_orders():
 
 # Главная функция
 if __name__ == '__main__':
-    create_tables()  # Создание таблиц перед запуском приложения
+    with app.app_context():
+        create_tables()  # Создание таблиц перед запуском приложения
     app.run(debug=True)
-
