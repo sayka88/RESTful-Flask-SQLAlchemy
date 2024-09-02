@@ -1,4 +1,10 @@
-if __name__ == '__main__':
+from app import app, db
+
+# Создание таблиц
+def create_tables():
     with app.app_context():
-        create_tables()  # Создание таблиц перед запуском приложения
-    app.run(debug=True)
+        db.create_all()
+        print("Database tables created.")
+
+if __name__ == '__main__':
+    create_tables()
